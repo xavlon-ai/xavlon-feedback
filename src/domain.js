@@ -1,0 +1,5 @@
+export const statuses = {under_review:'Under review',planned:'Planned',in_progress:'In progress',complete:'Complete',not_planned:'Not planned'};
+export function clean(value){return String(value ?? '').trim();}
+export function validateFeedback(input){const title=clean(input.title),description=clean(input.description), errors={}; if(title.length<5||title.length>120) errors.title='Title must be 5–120 characters.'; if(description.length<20||description.length>2000) errors.description='Description must be 20–2,000 characters.'; return {ok:!Object.keys(errors).length,errors,title,description};}
+export function validStatus(value){return Object.hasOwn(statuses,value);}
+export function filterPublic(items,{q='',status=[]}={}){const needle=clean(q).toLowerCase(); const wanted=(Array.isArray(status)?status:[status]).filter(validStatus); return items.filter(x=>x.isPublic&&(!needle||`${x.title} ${x.description}`.toLowerCase().includes(needle))&&(!wanted.length||wanted.includes(x.status))).sort((a,b)=>b.votes-a.votes||new Date(b.createdAt)-new Date(a.createdAt));}
